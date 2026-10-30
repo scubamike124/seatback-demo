@@ -4,4 +4,4 @@ This is a self-contained replay of one Seatback result. **It uses synthetic (inv
 
 - Open `index.html` in any browser. No server, no account, no API key.
 - The page makes no external requests.
-- Full project: private until its owner approves publication.
+- Full project (public, Apache-2.0): https://github.com/scubamike124/seatback
