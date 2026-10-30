@@ -529,4 +529,39 @@ body { padding-bottom: env(safe-area-inset-bottom); }
 
 
 <p style="margin:24px 16px;font-size:13px;text-align:center">Source code and licence (Apache-2.0): <a href="https://github.com/scubamike124/seatback">github.com/scubamike124/seatback</a>. This page is a static replay of synthetic data, not live Qloo output.</p>
+<script>
+(function () {
+  // Static replay: tabs switch between panels already on the page. Nothing is fetched, nothing is computed.
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role=tab]'));
+  function select(tab, focus) {
+    tabs.forEach(function (t) {
+      var on = t === tab; t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1;
+      var p = document.getElementById(t.getAttribute('aria-controls')); if (p) p.hidden = !on;
+    });
+    if (focus) tab.focus();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { select(t, false); });
+    t.addEventListener('keydown', function (e) {
+      var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : -1;
+      if (j < 0) return; e.preventDefault(); select(tabs[(j + tabs.length) % tabs.length], true);
+    });
+  });
+  var note = document.createElement('div');
+  note.setAttribute('role', 'status');
+  note.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:16px;max-width:min(560px,92vw);background:#12345a;color:#fff;padding:12px 16px;border-radius:10px;font:600 14px/1.4 system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.3);z-index:9999;display:none';
+  document.body.appendChild(note);
+  var timer;
+  function say(msg) { note.textContent = msg; note.style.display = 'block'; clearTimeout(timer); timer = setTimeout(function () { note.style.display = 'none'; }, 7000); }
+  function toAnswer() { var a = document.getElementById('answer-h'); if (a) a.scrollIntoView({ block: 'start' }); select(document.getElementById('tabbtn-slate'), false); }
+  var STATIC = 'This is a static replay: it holds one stored synthetic result (Minneapolis to Orlando). To try other routes or your own catalogue, run the app (see the README).';
+  Array.prototype.forEach.call(document.querySelectorAll('button.example, button.cta'), function (b) {
+    b.addEventListener('click', function () { if (/Minneapolis/.test(b.textContent)) { toAnswer(); } else { say(STATIC); } });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#load-sample, #csv-template, #run'), function (b) {
+    b.addEventListener('click', function (e) { e.preventDefault(); say(STATIC); });
+  });
+  var form = document.querySelector('form'); if (form) form.addEventListener('submit', function (e) { e.preventDefault(); say(STATIC); });
+})();
+</script>
 </body></html>
